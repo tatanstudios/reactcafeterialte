@@ -50,6 +50,7 @@ import Gastos from "./pages/Gastos/Gastos.tsx";
 import Reportes from "./pages/Reportes/Reportes.tsx";
 import ConfiguracionNegocio from "./pages/Configuracion/Negocio/ConfiguracionNegocio.tsx";
 import ConfiguracionFel from "./pages/Configuracion/Fel/ConfiguracionFel.tsx";
+import TicketCierreConfig from "./pages/Configuracion/TicketCierre/TicketCierreConfig.tsx";
 import { MODULOS_ACTIVOS } from "./utils/modulos";
 import CajasConfig from "./pages/Configuracion/Cajas/CajasConfig.tsx";
 import CajaTurno from "./pages/Caja/CajaTurno.tsx";
@@ -258,6 +259,9 @@ export default function App() {
                           </PermissionRoute>
                       }
                   />
+
+                  { /* TICKET DE CIERRE DE TURNO: solo el administrador */}
+                  <Route path="/admin/configuracion/ticket-cierre" element={<PermissionRoute role="admin"><TicketCierreConfig /></PermissionRoute>} />
 
                   { /* FACTURACIÓN ELECTRÓNICA */}
                   {MODULOS_ACTIVOS.facturacionElectronica && (

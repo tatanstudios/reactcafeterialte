@@ -7,6 +7,8 @@ interface PermissionRouteProps {
     permission?: string;
     permissions?: string[];
     requireAll?: boolean;
+    /** Exige ese rol (ej. "admin"), además de los permisos si se dan */
+    role?: string;
     fallback?: React.ReactNode;
 }
 
@@ -15,9 +17,10 @@ export const PermissionRoute = ({
                                     permission,
                                     permissions = [],
                                     requireAll = false,
+                                    role,
                                     fallback
                                 }: PermissionRouteProps) => {
-    const { hasPermission, loading } = useAuth();
+    const { hasPermission, hasRole, loading } = useAuth();
 
     if (loading) {
         return (
@@ -25,6 +28,10 @@ export const PermissionRoute = ({
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
             </div>
         );
+    }
+
+    if (role && !hasRole(role)) {
+        return fallback ? <>{fallback}</> : <Navigate to="/dashboard" replace />;
     }
 
     // Si se proporciona un solo permiso

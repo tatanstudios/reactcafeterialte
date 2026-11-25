@@ -14,7 +14,8 @@ import CustomIcon from "../components/sidebar/CustomIcon.tsx";
 import { MODULOS_ACTIVOS } from "../utils/modulos";
 
 // permissions: basta con tener uno; sin permissions el item es visible para todos
-type NavSubItem = { name: string; path: string; permissions?: string[] };
+// role: además exige ese rol (ej. "admin")
+type NavSubItem = { name: string; path: string; permissions?: string[]; role?: string };
 
 type NavItem = {
   name: string;
@@ -286,6 +287,11 @@ const navItems: NavItem[] = [
         path: "/admin/configuracion/negocio",
         permissions: ["configuracion.gestionar"],
       },
+      {
+        name: "Ticket de cierre",
+        path: "/admin/configuracion/ticket-cierre",
+        role: "admin",
+      },
       // Oculto mientras el negocio no use facturación electrónica (utils/modulos.ts)
       ...(MODULOS_ACTIVOS.facturacionElectronica ? [{
         name: "Facturación electrónica",
@@ -313,14 +319,14 @@ const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered, toggleMobileSidebar } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, setUser, hasAnyPermission } = useAuth();
+  const { user, setUser, hasAnyPermission, hasRole } = useAuth();
   const { actual } = useCaja();
 
   // Solo los items que el usuario puede abrir; un grupo sin hijos visibles se oculta
   const puedeVer = (permissions?: string[]) => !permissions || hasAnyPermission(permissions);
   const menuVisible = navItems
       .filter((nav) => puedeVer(nav.permissions))
-      .map((nav) => nav.subItems ? { ...nav, subItems: nav.subItems.filter((sub) => puedeVer(sub.permissions)) } : nav)
+      .map((nav) => nav.subItems ? { ...nav, subItems: nav.subItems.filter((sub) => puedeVer(sub.permissions) && (!sub.role || hasRole(sub.role))) } : nav)
       .filter((nav) => !nav.subItems || nav.subItems.length > 0);
   const [logoutLoading, setLogoutLoading] = useState(false);
 

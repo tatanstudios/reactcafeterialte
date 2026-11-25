@@ -17,6 +17,21 @@ export const actualizarConfiguracionNegocio = async (formData: FormData) => {
     return data as { success: number; message: string; data: ConfiguracionNegocioInterface };
 };
 
+// ************************  SECCION - TICKET DE CIERRE (solo admin)  ******************
+
+/** clave de sección → si se imprime */
+export type SeccionesCierre = Record<string, boolean>;
+
+export const getTicketCierre = async () => {
+    const { data } = await api.get("/configuracion/ticket-cierre");
+    return data as { data: SeccionesCierre; secciones: Record<string, string> };
+};
+
+export const actualizarTicketCierre = async (payload: SeccionesCierre) => {
+    const { data } = await api.put("/configuracion/ticket-cierre", payload);
+    return data as { success: number; message: string; data: SeccionesCierre };
+};
+
 // ************************  SECCION - FACTURACIÓN ELECTRÓNICA  ******************
 
 export const getConfiguracionFel = async () => {
