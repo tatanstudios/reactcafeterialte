@@ -250,16 +250,6 @@ const navItems: NavItem[] = [
 
 
   {
-    name: "Manuales",
-    icon:  <CustomIcon
-        src="/images/sidebar/productos.svg"
-        alt="Manuales"
-    />,
-    path: "/manuales",
-    permissions: ["manuales.ver"],
-  },
-
-  {
     name: "Configuración",
     icon:  <CustomIcon
         src="/images/sidebar/config-user.svg"
@@ -303,6 +293,16 @@ const navItems: NavItem[] = [
         permissions: ["configuracion.gestionar"],
       }] : []),
     ],
+  },
+
+  {
+    name: "Manuales",
+    icon:  <CustomIcon
+        src="/images/sidebar/productos.svg"
+        alt="Manuales"
+    />,
+    path: "/manuales",
+    permissions: ["manuales.ver"],
   },
 
 
