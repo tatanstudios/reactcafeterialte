@@ -14,6 +14,7 @@ interface Usuario {
   nombre: string;
   correo: string;
   rol: string;
+  caja: string | null;
   estado: boolean;
   ultimo_acceso: string | null;
   pin_actualizado_at?: string | null;
@@ -56,6 +57,12 @@ export default function Usuarios() {
       selector: (row: Usuario) => row.rol,
       sortable: true,
       width: "150px",
+    },
+    {
+      name: "Caja",
+      selector: (row: Usuario) => row.caja ?? "—",
+      sortable: true,
+      width: "160px",
     },
     {
       name: "Correo",

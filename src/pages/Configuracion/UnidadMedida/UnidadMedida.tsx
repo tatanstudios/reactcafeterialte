@@ -3,6 +3,7 @@ import DataTable from "react-data-table-component";
 import LoadingModal from "../../../components/Loading/LoadingModal";
 import ConfirmDeleteModal from "../../../components/modal/ConfirmDeleteModal";
 import UnidadMedidaModal from "../../../components/modal/UnidadMedidaModal";
+import BorrarVentasTemporal from "../../../components/temporal/BorrarVentasTemporal"; // TEMPORAL: quitar en producción
 import { useUnidadMedida } from "../../../hooks/configuracion/useUnidadMedidaHook.ts";
 import { UnidadMedidaInterface } from "../../../types/interfaces.ts";
 
@@ -142,6 +143,8 @@ export default function UnidadMedidaConfig() {
                         >
                             + Crear Unidad de Medida
                         </button>
+                        {/* TEMPORAL (pruebas): quitar en producción */}
+                        <BorrarVentasTemporal />
                         <div>
                             <h1 className="text-2xl font-semibold text-gray-800">Unidades de Medida</h1>
                             <p className="text-sm text-gray-500">{filteredData.length} unidades en total</p>

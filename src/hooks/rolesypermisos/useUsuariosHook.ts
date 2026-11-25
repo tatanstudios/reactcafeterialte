@@ -11,6 +11,7 @@ interface Usuario {
     nombre: string;
     correo: string;
     rol: string;
+    caja: string | null;
     estado: boolean;
     ultimo_acceso: string | null;
   pin_actualizado_at?: string | null;
@@ -21,6 +22,7 @@ interface NuevoUsuarioForm {
     email: string;
     password: string;
     rol: string;
+    caja_id: number | null;
 }
 
 interface EditarUsuarioForm {
@@ -29,6 +31,7 @@ interface EditarUsuarioForm {
     password?: string;
     rol: string;
     estado: boolean;
+    caja_id: number | null;
 }
 
 // Helper para extraer el mensaje de error de la respuesta

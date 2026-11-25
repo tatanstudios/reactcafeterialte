@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { EyeCloseIcon, EyeIcon } from "../../icons";
 import { getRolesTable } from "../../services/api";
+import { getCatalogosCaja } from "../../services/caja";
 import { getToken } from "../../utils/auth";
 
-const formVacio = { nombre: "", email: "", password: "", rol: "" };
+const formVacio = { nombre: "", email: "", password: "", rol: "", caja_id: null as number | null };
 
 interface Props {
   isOpen: boolean;
@@ -13,6 +14,7 @@ interface Props {
     email: string;
     password: string;
     rol: string;
+    caja_id: number | null;
   }) => Promise<void>; // ← Cambiado a Promise
   isCreating: boolean;
 }
@@ -25,6 +27,7 @@ export default function NuevoUsuarioModal({
                                           }: Props) {
   const [form, setForm] = useState(formVacio);
   const [roles, setRoles] = useState<{ [id: string]: string }>({});
+  const [cajas, setCajas] = useState<{ id: number; nombre: string }[]>([]);
 
   // Roles reales (admin, cajero, encargado_inventario, ...)
   useEffect(() => {
@@ -32,6 +35,9 @@ export default function NuevoUsuarioModal({
     getRolesTable(getToken() ?? "")
       .then((res) => setRoles(res.roles ?? {}))
       .catch(() => setRoles({}));
+    getCatalogosCaja()
+      .then((res) => setCajas(res.cajas ?? []))
+      .catch(() => setCajas([]));
   }, [isOpen]);
 
   const [errors, setErrors] = useState<{
@@ -201,6 +207,23 @@ export default function NuevoUsuarioModal({
             {errors.rol && (
               <p className="text-xs text-red-500 mt-1">{errors.rol}</p>
             )}
+          </div>
+
+          {/* CAJA ASIGNADA */}
+          <div>
+            <select
+              value={form.caja_id ?? ""}
+              onChange={(e) => setForm({ ...form, caja_id: e.target.value ? Number(e.target.value) : null })}
+              className={`${baseInput} border-gray-300`}
+            >
+              <option value="">Sin caja asignada</option>
+              {cajas.map((c) => (
+                <option key={c.id} value={c.id}>{c.nombre}</option>
+              ))}
+            </select>
+            <p className="text-xs text-gray-500 mt-1">
+              Los meseros solo abren turno en esta caja (sin caja no pueden abrir). El administrador elige la caja al abrir.
+            </p>
           </div>
 
         </div>

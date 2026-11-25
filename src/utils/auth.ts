@@ -6,6 +6,10 @@ export interface User {
   email: string;
   roles: string[];        // 👈 Agregar roles
   permissions: string[];  // 👈 Agregar permissions
+  // Sin «caja.elegir_caja» (meseros) se trabaja solo en la caja asignada por el administrador
+  elige_caja?: boolean;
+  caja_id?: number | null;
+  caja_nombre?: string | null;
 }
 
 export interface AuthData {

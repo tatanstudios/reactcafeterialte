@@ -12,6 +12,8 @@ export const PERMISOS_CAJA = ["caja.abrir", "caja.movimientos", "caja.arqueo", "
 
 interface CajaContextType {
     cajaId: number | null;
+    // El usuario no elige caja: usa la que le asignó el administrador (cajaId es esa, o null si no tiene)
+    cajaFija: boolean;
     elegirCaja: (cajaId: number | null) => void;
     catalogos: CatalogosCajaInterface | null;
     actual: TurnoActualResponseInterface | null; // turno abierto de la caja (o turno: null)
@@ -25,7 +27,10 @@ export const CajaProvider = ({ children }: { children: ReactNode }) => {
     const { user, hasAnyPermission } = useAuth();
     const puedeUsarCaja = !!user && hasAnyPermission(PERMISOS_CAJA);
 
-    const [cajaId, setCajaId] = useState<number | null>(getCajaDispositivo);
+    const [cajaDispositivo, setCajaId] = useState<number | null>(getCajaDispositivo);
+    // Los meseros no eligen: trabajan en la caja que les asignó el administrador (si no tienen, no pueden abrir turno)
+    const cajaFija = user?.elige_caja === false;
+    const cajaId = cajaFija ? (user?.caja_id ?? null) : cajaDispositivo;
     const [catalogos, setCatalogos] = useState<CatalogosCajaInterface | null>(null);
     const [actual, setActual] = useState<TurnoActualResponseInterface | null>(null);
     const [cargando, setCargando] = useState(false);
@@ -40,7 +45,7 @@ export const CajaProvider = ({ children }: { children: ReactNode }) => {
 
             // Con una sola caja activa no hace falta elegir
             let id = cajaId;
-            if (!id && cats.cajas.length === 1) {
+            if (!cajaFija && !id && cats.cajas.length === 1) {
                 id = cats.cajas[0].id;
                 setCajaDispositivo(id);
                 setCajaId(id);
@@ -48,8 +53,10 @@ export const CajaProvider = ({ children }: { children: ReactNode }) => {
             // La caja guardada ya no existe o fue desactivada
             if (id && !cats.cajas.some((c) => c.id === id)) {
                 id = null;
-                setCajaDispositivo(null);
-                setCajaId(null);
+                if (!cajaFija) {
+                    setCajaDispositivo(null);
+                    setCajaId(null);
+                }
             }
 
             const turno = id ? await getTurnoActual(id) : null;
@@ -70,7 +77,7 @@ export const CajaProvider = ({ children }: { children: ReactNode }) => {
         } finally {
             setCargando(false);
         }
-    }, [puedeUsarCaja, cajaId]);
+    }, [puedeUsarCaja, cajaId, cajaFija]);
 
     useEffect(() => {
         if (puedeUsarCaja) {
@@ -79,16 +86,20 @@ export const CajaProvider = ({ children }: { children: ReactNode }) => {
             setCatalogos(null);
             setActual(null);
         }
-    }, [puedeUsarCaja, cajaId]);
+    }, [puedeUsarCaja, cajaId, cajaFija]);
 
     const elegirCaja = (id: number | null) => {
+        if (cajaFija) return;
         setCajaDispositivo(id);
         setCajaId(id);
         setActual(null);
     };
 
+    // Caja asignada desactivada: para el mesero es como no tener caja
+    const cajaVisible = cajaFija && cajaId && catalogos && !catalogos.cajas.some((c) => c.id === cajaId) ? null : cajaId;
+
     return (
-        <CajaContext.Provider value={{ cajaId, elegirCaja, catalogos, actual, cargando, refrescar }}>
+        <CajaContext.Provider value={{ cajaId: cajaVisible, cajaFija, elegirCaja, catalogos, actual, cargando, refrescar }}>
             {children}
         </CajaContext.Provider>
     );

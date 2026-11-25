@@ -10,6 +10,7 @@ interface EditarUsuarioForm {
   password?: string;
   rol: string;
   estado: boolean;
+  caja_id: number | null;
 }
 
 interface Props {
@@ -33,8 +34,10 @@ export default function EditarUsuarioModal({
     password: "",
     rol: "",
     estado: true,
+    caja_id: null,
   });
 
+  const [cajas, setCajas] = useState<{ id: number; nombre: string; activo: boolean }[]>([]);
   const [roles, setRoles] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -61,7 +64,9 @@ export default function EditarUsuarioModal({
       password: "",
       rol: "",
       estado: true,
+      caja_id: null,
     });
+    setCajas([]);
     setErrors({});
     setRoles({});
     setLoading(false);
@@ -92,9 +97,11 @@ export default function EditarUsuarioModal({
           rol: rolId,
           // Forzar activo si es el principal
           estado: id === 1 ? true : Boolean(data.info.estado),
+          caja_id: data.info.caja_id ?? null,
         });
 
         setRoles(data.roles);
+        setCajas(data.cajas ?? []);
       } catch {
         toast.error("Error al cargar usuario");
         handleClose();
@@ -286,6 +293,27 @@ export default function EditarUsuarioModal({
               {errors.rol && (
                 <p className="text-xs text-red-500 mt-1">{errors.rol}</p>
               )}
+            </div>
+
+            {/* CAJA ASIGNADA */}
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Caja asignada</label>
+              <select
+                value={form.caja_id ?? ""}
+                onChange={(e) => setForm({ ...form, caja_id: e.target.value ? Number(e.target.value) : null })}
+                disabled={isUpdating}
+                className={`${baseInput} border-gray-300`}
+              >
+                <option value="">Sin caja asignada</option>
+                {cajas.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.nombre}{c.activo ? "" : " (desactivada)"}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-500 mt-1">
+                Los meseros solo abren turno en esta caja (sin caja no pueden abrir). El administrador elige la caja al abrir.
+              </p>
             </div>
 
 

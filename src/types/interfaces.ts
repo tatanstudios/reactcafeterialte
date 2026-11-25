@@ -13,10 +13,12 @@ export interface InformacionAdministradorResponseInterface {
         nombre: string;
         email: string;
         estado: boolean;
+        caja_id: number | null;
     };
     roles: {
         [key: string]: string;
     };
+    cajas: { id: number; nombre: string; activo: boolean }[];
     rol_actual: string;
 }
 

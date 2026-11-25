@@ -357,6 +357,7 @@ export const crearUsuario = async (
     email: string;
     password: string;
     rol: string;
+    caja_id: number | null;
   }
 ) => {
   const { data } = await api.post(
@@ -563,6 +564,7 @@ export const actualizarAdministrador = async (
         password?: string;
         rol: string;
         estado: boolean;
+        caja_id: number | null;
     }
 ) => {
     try {

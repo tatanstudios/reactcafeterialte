@@ -33,7 +33,7 @@ const botonGrande = 'flex-1 min-w-[140px] rounded-xl px-4 py-4 text-base font-se
 
 export default function CajaTurno() {
     const navigate = useNavigate();
-    const { cajaId, elegirCaja, catalogos, actual, cargando } = useCaja();
+    const { cajaId, cajaFija, elegirCaja, catalogos, actual, cargando } = useCaja();
     const { user } = useAuth();
     const {
         turno, guardando,
@@ -62,6 +62,18 @@ export default function CajaTurno() {
         );
     }
 
+    // ── Mesero sin caja asignada (o la suya está desactivada): no puede abrir turno ──
+    if (!cajaId && cajaFija) {
+        return (
+            <div className="p-6">
+                <PageHeader title="Caja" subtitle="No tienes una caja asignada" />
+                <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+                    Para abrir turno necesitas una caja asignada (o la tuya está desactivada). Pide al administrador que te asigne una en Usuarios.
+                </p>
+            </div>
+        );
+    }
+
     // ── Elegir la caja de este dispositivo ───────────────────────
     if (!cajaId) {
         return (
@@ -83,7 +95,7 @@ export default function CajaTurno() {
         );
     }
 
-    const cambiarCaja = catalogos.cajas.length > 1 && (
+    const cambiarCaja = !cajaFija && catalogos.cajas.length > 1 && (
         <button type="button" onClick={() => elegirCaja(null)} className="text-sm text-blue-600 hover:underline">
             Cambiar caja
         </button>
