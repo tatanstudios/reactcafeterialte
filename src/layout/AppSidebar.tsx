@@ -187,6 +187,16 @@ const navItems: NavItem[] = [
   },
 
   {
+    name: "Asistente",
+    icon:  <CustomIcon
+        src="/images/sidebar/productos.svg"
+        alt="Asistente"
+    />,
+    path: "/asistente",
+    permissions: ["asistente.usar"],
+  },
+
+  {
     name: "Gastos",
     icon:  <CustomIcon
         src="/images/logo/tiempo.svg"

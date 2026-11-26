@@ -48,6 +48,7 @@ import Mermas from "./pages/Produccion/Mermas.tsx";
 import ResumenProduccion from "./pages/Produccion/ResumenProduccion.tsx";
 import Gastos from "./pages/Gastos/Gastos.tsx";
 import Reportes from "./pages/Reportes/Reportes.tsx";
+import Asistente from "./pages/Asistente/Asistente.tsx";
 import ConfiguracionNegocio from "./pages/Configuracion/Negocio/ConfiguracionNegocio.tsx";
 import ConfiguracionFel from "./pages/Configuracion/Fel/ConfiguracionFel.tsx";
 import TicketCierreConfig from "./pages/Configuracion/TicketCierre/TicketCierreConfig.tsx";
@@ -244,6 +245,7 @@ export default function App() {
                   <Route path="/admin/auditoria" element={<PermissionRoute permission="auditoria.ver"><Auditoria /></PermissionRoute>} />
                   <Route path="/notificaciones" element={<Notificaciones />} />
                   <Route path="/reportes" element={<PermissionRoute permission="reportes.ver"><Reportes /></PermissionRoute>} />
+                  <Route path="/asistente" element={<PermissionRoute permission="asistente.usar"><Asistente /></PermissionRoute>} />
                   <Route path="/manuales" element={<PermissionRoute permission="manuales.ver"><Manuales /></PermissionRoute>} />
                   <Route path="/manuales/permisos" element={<PermissionRoute permission="roles.gestionar"><PermisosManuales /></PermissionRoute>} />
                   <Route path="/manuales/:id" element={<PermissionRoute permission="manuales.ver"><Manuales /></PermissionRoute>} />
