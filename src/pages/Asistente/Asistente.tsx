@@ -1,7 +1,7 @@
 import { Fragment, ReactNode, useEffect, useRef, useState } from "react";
 
 import PageHeader from "../../components/common/PageHeader";
-import { getPreguntasSinRespuesta, MensajeAsistente, PreguntaSinRespuesta, preguntarAsistente } from "../../services/asistente";
+import { getPreguntasSinRespuesta, MensajeAsistente, PreguntaSinRespuesta, preguntarAsistente, resolverPreguntaSinRespuesta } from "../../services/asistente";
 import { fechaHora, mensajeError } from "../../utils/formato";
 
 const SUGERENCIAS = [
@@ -35,6 +35,20 @@ function TextoRespuesta({ texto }: { texto: string }) {
 function SinRespuesta({ onCerrar }: { onCerrar: () => void }) {
     const [preguntas, setPreguntas] = useState<PreguntaSinRespuesta[] | null>(null);
     const [error, setError] = useState("");
+    const [resolviendo, setResolviendo] = useState<number | null>(null);
+
+    const resolver = async (id: number) => {
+        setResolviendo(id);
+        setError("");
+        try {
+            await resolverPreguntaSinRespuesta(id);
+            setPreguntas(lista => lista?.filter(p => p.id !== id) ?? null);
+        } catch (err) {
+            setError(mensajeError(err, "No se pudo marcar como resuelta"));
+        } finally {
+            setResolviendo(null);
+        }
+    };
 
     useEffect(() => {
         getPreguntasSinRespuesta().then(setPreguntas).catch(err => setError(mensajeError(err, "No se pudieron cargar")));
@@ -48,11 +62,11 @@ function SinRespuesta({ onCerrar }: { onCerrar: () => void }) {
             </div>
             {error && <p className="text-sm text-red-600">{error}</p>}
             {!preguntas && !error && <p className="text-sm text-gray-500">Cargando…</p>}
-            {preguntas?.length === 0 && <p className="py-6 text-center text-sm text-gray-500">Todavía no hay preguntas sin respuesta.</p>}
+            {preguntas?.length === 0 && <p className="py-6 text-center text-sm text-gray-500">No hay preguntas pendientes.</p>}
             {!!preguntas?.length && (
                 <table className="w-full text-left text-sm">
                     <thead className="border-b border-gray-200 text-gray-500 dark:border-gray-700">
-                        <tr><th className="py-2 pr-3">Fecha</th><th className="py-2 pr-3">Usuario</th><th className="py-2 pr-3">Pregunta</th><th className="py-2">Qué falta</th></tr>
+                        <tr><th className="py-2 pr-3">Fecha</th><th className="py-2 pr-3">Usuario</th><th className="py-2 pr-3">Pregunta</th><th className="py-2 pr-3">Qué falta</th><th className="py-2" /></tr>
                     </thead>
                     <tbody className="text-gray-700 dark:text-gray-300">
                         {preguntas.map(p => (
@@ -60,7 +74,13 @@ function SinRespuesta({ onCerrar }: { onCerrar: () => void }) {
                                 <td className="whitespace-nowrap py-2 pr-3">{fechaHora(p.fecha)}</td>
                                 <td className="py-2 pr-3">{p.usuario ?? "—"}</td>
                                 <td className="py-2 pr-3">{p.pregunta}</td>
-                                <td className="py-2 text-gray-500">{p.falta}</td>
+                                <td className="py-2 pr-3 text-gray-500">{p.falta}</td>
+                                <td className="py-2 text-right">
+                                    <button type="button" onClick={() => resolver(p.id)} disabled={resolviendo !== null}
+                                        className="whitespace-nowrap rounded-lg bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700 disabled:opacity-50">
+                                        {resolviendo === p.id ? "Marcando…" : "Marcar como resuelta"}
+                                    </button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>

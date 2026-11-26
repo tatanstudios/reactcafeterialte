@@ -33,3 +33,7 @@ export const getPreguntasSinRespuesta = async () => {
     const { data } = await api.get<{ preguntas: PreguntaSinRespuesta[] }>("/asistente/sin-respuesta");
     return data.preguntas;
 };
+
+export const resolverPreguntaSinRespuesta = async (id: number) => {
+    await api.post(`/asistente/sin-respuesta/${id}/resolver`);
+};
